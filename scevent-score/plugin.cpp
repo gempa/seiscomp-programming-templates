@@ -21,10 +21,6 @@
 #include <seiscomp/datamodel/origin.h>
 #include <seiscomp/plugins/events/scoreprocessor.h>
 
-#include <map>
-#include <vector>
-#include <string>
-
 
 namespace {
 
