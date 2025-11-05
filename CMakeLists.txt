@@ -1,1 +1,1 @@
-SUBDIRS(amplitude-pga scevent-score)
+SUBDIRS(amplitude-pga scevent-score traveltime-infra)

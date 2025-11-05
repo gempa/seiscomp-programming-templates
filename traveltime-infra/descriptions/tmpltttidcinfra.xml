@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<seiscomp>
+	<plugin name="ttt-idc-infra">
+		<extends>global</extends>
+		<description>
+		TravelTimeTable template for infrasound Is phase using by default the IDC
+		model.
+		</description>
+		<configuration>
+			<group name="ttt">
+				<group name="idcinfra">
+					<parameter name="tables" type="list:string">
+						<description>
+						The registered tables which can be used by applications. It
+						should contain &quot;IDC_2010&quot; as this model ships by
+						default.
+						</description>
+					</parameter>
+					<struct type="TTTIDCInfraTable">
+						<parameter name="distances" type="list:double" unit="deg">
+							<description>
+							Defines the list of configured distances for which a
+							celerity must exist. This means that the list of distances
+							and celerities must have the same length.
+							</description>
+						</parameter>
+						<parameter name="celerities" type="list:double" unit="km/s">
+							<description>
+							Defines the list of configured celerities for which a
+							distance must exist. This means that the list of distances
+							and celerities must have the same length.
+							</description>
+						</parameter>
+					</struct>
+				</group>
+			</group>
+		</configuration>
+	</plugin>
+</seiscomp>
