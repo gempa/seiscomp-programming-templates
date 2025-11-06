@@ -30,7 +30,6 @@
 // - AmplitudeProcessor interface required to derive from it
 #include <seiscomp/processing/amplitudeprocessor.h>
 // - For channel data combiners
-#include <seiscomp/processing/operator/l2norm.h>
 #include <seiscomp/processing/operator/ncomps.h>
 
 
@@ -46,6 +45,43 @@ using namespace Seiscomp::Processing;
 
 
 #define AMPLITUDE_TYPE "template_pga"
+
+
+/**
+ * @brief Defines the generic component combiner class.
+ * This class is being used to combined multiple components sample wise. A concrete
+ * two or three component combiner is implemented in the particular spezialization.
+ */
+template <typename T, int N>
+class ComponentCombiner {
+	// Process N traces in place of length n
+	void operator()(const Record *, T *data[N], int n, const Core::Time &stime, double sfreq) const;
+
+	// publishs a processed component
+	bool publish(int c) const;
+
+	void reset();
+};
+
+
+/**
+ * @brief The two-component combiner.
+ * This combiner spezialized the implementation for two components and calculates
+ * the L2 norm (length of a two dimensional vector).
+ */
+template <typename T>
+struct ComponentCombiner<T, 2> {
+	void operator()(const Record *, T *data[2], int n, const Core::Time &stime, double sfreq) const {
+		for ( int i = 0; i < n; ++i )
+			data[0][i] = sqrt(data[0][i] * data[0][i] +
+			                  data[1][i] * data[1][i]);
+	}
+
+	bool publish(int c) const { return c == 0; }
+
+	void reset() {}
+};
+
 
 
 class PGAProcessor : public AmplitudeProcessor {
@@ -128,7 +164,7 @@ class PGAProcessor : public AmplitudeProcessor {
 			SEISCOMP_DEBUG("  + pre-filter = %s", preFilter);
 			SEISCOMP_DEBUG("  + filter = %s", postFilter);
 
-			using OpWrapper = Operator::StreamConfigWrapper<double, 2, Operator::L2Norm>;
+			using OpWrapper = Operator::StreamConfigWrapper<double, 2, ComponentCombiner>;
 
 			if ( !preFilter.empty() ) {
 				// Create a filter instance from the provided string.
@@ -149,7 +185,7 @@ class PGAProcessor : public AmplitudeProcessor {
 						FilterL2Norm(
 							filter, OpWrapper(
 								_streamConfig + FirstHorizontal,
-								Operator::L2Norm<double, 2>()
+								ComponentCombiner<double, 2>()
 							)
 						)
 					)
@@ -162,7 +198,7 @@ class PGAProcessor : public AmplitudeProcessor {
 					new NCompsOperator<double, 2, OpWrapper>(
 						OpWrapper(
 							_streamConfig + FirstHorizontal,
-							Operator::L2Norm<double, 2>()
+							ComponentCombiner<double, 2>()
 						)
 					)
 				);
