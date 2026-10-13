@@ -62,22 +62,22 @@ class App(client.Application):
 
         try:
             self.inputFile = self.commandline().optionString("input")
-        except RuntimeError:
+        except Exception:
             try:
                 fn = system.Environment.Instance().absolutePath(
                     self.configGetString("input")
                 )
                 self.inputFile = fn
-            except RuntimeError:
+            except Exception:
                 logging.error("No input file defined")
                 return False
 
         try:
             self.timerInterval = int(self.commandline().optionString("timer"))
-        except RuntimeError:
+        except Exception:
             try:
                 self.timerInterval = self.configGetInt("timer")
-            except RuntimeError:
+            except Exception:
                 logging.debug(
                     f"Timer interval not configured, set to {self.timerInterval}"
                 )
