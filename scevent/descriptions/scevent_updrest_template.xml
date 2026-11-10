@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<seiscomp>
+	<plugin name="rest-template">
+		<extends>scevent</extends>
+		<description>processing template for scevent</description>
+		<configuration>
+		</configuration>
+	</plugin>
+</seiscomp>
